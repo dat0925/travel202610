@@ -55,6 +55,7 @@
 - Wikipedia「黒磯板室インターチェンジ」 https://ja.wikipedia.org/wiki/黒磯板室インターチェンジ
 - Wikipedia「那須高原サービスエリア」 https://ja.wikipedia.org/wiki/那須高原サービスエリア
 - 宝石探しトレジャーストーンパーク 公式サイト http://www.treasurestonepark.com/
+- 那須町観光協会「NASUのラスク屋さん」 https://www.nasukogen.org/spotsearch/detail.php?id=910072702
 - OpenStreetMap / Nominatim https://www.openstreetmap.org/copyright
 - OSRM https://project-osrm.org/
 - 国土地理院 住所検索API https://maps.gsi.go.jp/development/ichiran.html

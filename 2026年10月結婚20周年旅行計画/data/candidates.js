@@ -8992,6 +8992,13 @@ window.CANDIDATES = {
    "labelDir": "left"
   },
   {
+   "name": "NASUのラスク屋さん",
+   "lat": 37.0422506,
+   "lng": 140.0105521,
+   "cat": "土産（ラスク）",
+   "labelDir": "left"
+  },
+  {
    "name": "那須ハイランドパーク",
    "lat": 37.0652401,
    "lng": 139.964282,
