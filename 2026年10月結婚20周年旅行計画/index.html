@@ -292,6 +292,7 @@
         <li>Wikipedia「那須インターチェンジ」（座標・所在地） — <a href="https://ja.wikipedia.org/wiki/那須インターチェンジ" target="_blank" rel="noopener">https://ja.wikipedia.org/wiki/那須インターチェンジ</a></li>
         <li>Wikipedia「黒磯板室インターチェンジ」（座標・所在地） — <a href="https://ja.wikipedia.org/wiki/黒磯板室インターチェンジ" target="_blank" rel="noopener">https://ja.wikipedia.org/wiki/黒磯板室インターチェンジ</a></li>
         <li>Wikipedia「那須高原サービスエリア」（那須高原スマートIC） — <a href="https://ja.wikipedia.org/wiki/那須高原サービスエリア" target="_blank" rel="noopener">https://ja.wikipedia.org/wiki/那須高原サービスエリア</a></li>
+        <li>宝石探しトレジャーストーンパーク 公式サイト — <a href="http://www.treasurestonepark.com/" target="_blank" rel="noopener">http://www.treasurestonepark.com/</a></li>
         <li>OpenStreetMap / Nominatim（施設・バス停・観光スポットの座標） — <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">https://www.openstreetmap.org/copyright</a></li>
         <li>OSRM（経路・距離・所要時間の算出） — <a href="https://project-osrm.org/" target="_blank" rel="noopener">https://project-osrm.org/</a></li>
         <li>国土地理院 住所検索API（住所→座標の補助的確認） — <a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noopener">https://maps.gsi.go.jp/development/ichiran.html</a></li>
@@ -425,17 +426,14 @@
       .bindTooltip(ic.name, {permanent:true, direction:'right', offset:[9,0], className:'tip-ic'});
   });
 
-  // 観光スポット（至近のスポットはラベルが重なるので左右に振り分ける）
-  const placed = [];
+  // 観光スポット（ラベルの左右はデータの labelDir で指定。至近のスポット同士が重ならないようにするため）
   D.spots.forEach(sp => {
-    const clash = placed.some(o => map.distance([o.lat,o.lng],[sp.lat,sp.lng]) < 700);
-    const left = clash;
+    const left = sp.labelDir === 'left';
     L.marker([sp.lat, sp.lng], {
       icon: L.divIcon({className:'', html:'<div class="dot-spot"></div>', iconSize:[11,11], iconAnchor:[5,5]})
     }).addTo(laySpots).bindPopup('<b>'+sp.name+'</b><br><span class="pop-meta">'+sp.cat+'</span>')
       .bindTooltip(sp.name, {permanent:true, direction:left?'left':'right',
                              offset:[left?-7:7,0], className:'tip-spot'});
-    placed.push(sp);
   });
 
   // ピンが重なる宿（至近距離）を左右にずらすためのオフセットを算出
