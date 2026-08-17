@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>那須の宿 候補マップ｜2026年10月 結婚20周年旅行</title>
+<meta name="description" content="2026年10月の結婚20周年旅行に向けた、栃木県那須のペンション候補7軒と最寄り高速インターチェンジの位置関係マップ。">
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<style>
+  :root{
+    --bg:#f7f5f0; --panel:#ffffff; --ink:#1f2a24; --ink-soft:#5a6b62; --line:#e2ded4;
+    --forest:#2f5d4a; --forest-soft:#e6efe9; --terra:#c05f38; --terra-soft:#fbeee8;
+    --gold:#b08d3f; --shadow:0 1px 2px rgba(31,42,36,.06),0 8px 24px rgba(31,42,36,.06);
+    --radius:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#14181a; --panel:#1c2225; --ink:#e8ece9; --ink-soft:#9fb0a8; --line:#2c3438;
+      --forest:#7fbfa2; --forest-soft:#1f2f28; --terra:#e59470; --terra-soft:#32241e;
+      --gold:#d0ab5e; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;
+    line-height:1.75; -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+
+  /* ---------- header ---------- */
+  header{background:var(--forest);color:#fff;padding:48px 0 40px}
+  @media (prefers-color-scheme: dark){header{background:#1a2b23}}
+  header .eyebrow{
+    font-size:13px;letter-spacing:.18em;text-transform:none;opacity:.85;margin:0 0 10px;
+    font-weight:600;
+  }
+  header h1{margin:0;font-size:clamp(26px,4.6vw,40px);line-height:1.3;font-weight:800;letter-spacing:.01em}
+  header p.lead{margin:14px 0 0;max-width:44em;font-size:clamp(14px,1.7vw,16px);opacity:.92}
+
+  /* ---------- summary ---------- */
+  .summary{margin:-24px auto 0;position:relative;z-index:2}
+  .summary-inner{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:22px 24px;
+  }
+  .summary h2{margin:0 0 10px;font-size:15px;color:var(--terra);letter-spacing:.04em}
+  .summary ul{margin:0;padding-left:1.2em}
+  .summary li{margin:6px 0}
+  .summary strong{color:var(--forest);font-weight:700}
+
+  /* ---------- sections ---------- */
+  section{padding:44px 0 8px}
+  h2.sec{font-size:clamp(19px,2.6vw,24px);margin:0 0 6px;letter-spacing:.01em}
+  .sec-note{margin:0 0 20px;color:var(--ink-soft);font-size:14px;max-width:52em}
+
+  /* ---------- map ---------- */
+  #map{
+    height:min(70vh,620px);border-radius:var(--radius);border:1px solid var(--line);
+    box-shadow:var(--shadow);background:var(--panel);
+  }
+  .map-toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+  .toggle{
+    display:inline-flex;align-items:center;gap:7px;cursor:pointer;user-select:none;
+    background:var(--panel);border:1px solid var(--line);border-radius:999px;
+    padding:7px 14px;font-size:13px;font-weight:600;color:var(--ink-soft);
+    transition:border-color .15s, color .15s;
+  }
+  .toggle:hover{border-color:var(--forest)}
+  .toggle input{accent-color:var(--forest);margin:0}
+  .toggle.on{color:var(--ink);border-color:var(--forest)}
+  .tb-sep{width:1px;background:var(--line);margin:2px 4px}
+  .btn{
+    font:inherit;font-size:13px;font-weight:600;cursor:pointer;
+    background:var(--forest);color:#fff;border:1px solid var(--forest);
+    border-radius:999px;padding:7px 14px;transition:opacity .15s;
+  }
+  @media (prefers-color-scheme: dark){.btn{color:#12211b}}
+  .btn:hover{opacity:.85}
+  .legend{
+    display:flex;flex-wrap:wrap;gap:18px;margin:14px 0 0;font-size:13px;color:var(--ink-soft);
+  }
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .swatch{width:15px;height:15px;border-radius:50%;display:inline-block;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.15)}
+  .swatch.ic{background:var(--terra);border-radius:3px}
+  .swatch.stay{background:var(--forest)}
+  .swatch.spot{background:var(--gold);width:10px;height:10px}
+  .swatch.line{width:22px;height:0;border-radius:0;border:0;border-top:3px dashed var(--forest);box-shadow:none}
+  .swatch.circle{background:transparent;border:2px dashed var(--terra);box-shadow:none}
+
+  /* markers */
+  .pin{
+    display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;
+    border-radius:50%;border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);
+    font-size:14px;background:var(--forest);
+  }
+  .pin.approx{background:#7c9c8d;border-style:dashed}
+  .pin.active{outline:3px solid var(--gold);outline-offset:2px}
+  .dot-ic{
+    width:14px;height:14px;border-radius:3px;background:#c05f38;
+    border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4);
+  }
+  .dot-spot{
+    width:11px;height:11px;border-radius:50%;background:#b08d3f;
+    border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.35);
+  }
+  /* 地図上の常時ラベル（Leafletのツールチップ既定枠は使わず、文字だけを置く） */
+  .leaflet-tooltip.tip-ic,.leaflet-tooltip.tip-spot{
+    background:none;border:0;box-shadow:none;padding:0;white-space:nowrap;
+    font-weight:800;text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 4px #fff,0 0 6px #fff;
+  }
+  .leaflet-tooltip.tip-ic{color:#a94b26;font-size:12px}
+  .leaflet-tooltip.tip-spot{color:#7d6122;font-size:11px;font-weight:700}
+  .leaflet-tooltip.tip-ic:before,.leaflet-tooltip.tip-spot:before{display:none}
+  .leaflet-popup-content{margin:12px 14px;font-size:13.5px;line-height:1.65}
+  .leaflet-popup-content b{font-size:14.5px}
+  .pop-meta{color:#5a6b62;font-size:12.5px}
+
+  /* ---------- table ---------- */
+  .table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);background:var(--panel)}
+  table{border-collapse:collapse;width:100%;min-width:760px;font-size:14px}
+  thead th{
+    background:var(--forest-soft);color:var(--forest);font-weight:700;font-size:12.5px;
+    text-align:left;padding:12px 14px;white-space:nowrap;border-bottom:1px solid var(--line);
+  }
+  thead th.num{text-align:right}
+  tbody td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  tbody td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  tbody tr{cursor:pointer;transition:background .12s}
+  tbody tr:hover{background:var(--forest-soft)}
+  tbody tr.active{background:var(--forest-soft);box-shadow:inset 3px 0 0 var(--gold)}
+  tbody tr:last-child td{border-bottom:0}
+  .rank{
+    display:inline-flex;width:22px;height:22px;border-radius:50%;background:var(--forest);color:#fff;
+    align-items:center;justify-content:center;font-size:12px;font-weight:800;margin-right:8px;flex:none;
+  }
+  .name-cell{display:flex;align-items:flex-start;min-width:15em}
+  .name-cell b{font-weight:700}
+  .best{color:var(--terra);font-weight:700}
+  .tag{
+    display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:999px;
+    background:var(--terra-soft);color:var(--terra);margin-left:6px;vertical-align:2px;
+  }
+
+  /* ---------- cards ---------- */
+  .cards{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));margin-top:4px}
+  .card{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:20px;scroll-margin-top:20px;
+  }
+  .card.active{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold),var(--shadow)}
+  .card h3{margin:0 0 2px;font-size:16.5px;display:flex;align-items:flex-start;gap:0}
+  .card .addr{margin:0 0 14px;font-size:12.5px;color:var(--ink-soft)}
+  .card dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:13.5px}
+  .card dt{color:var(--ink-soft);font-weight:600;white-space:nowrap}
+  .card dd{margin:0}
+  .card .feat{margin:14px 0 0;font-size:13px;color:var(--ink-soft);line-height:1.7;border-top:1px dashed var(--line);padding-top:12px}
+  .card a{color:var(--forest);font-weight:600}
+  .warn{
+    margin:12px 0 0;font-size:12.5px;background:var(--terra-soft);color:var(--terra);
+    border-radius:8px;padding:9px 12px;font-weight:600;
+  }
+
+  /* ---------- sources ---------- */
+  .sources{font-size:13px;color:var(--ink-soft)}
+  .sources ol{padding-left:1.4em;margin:0}
+  .sources li{margin:7px 0;word-break:break-word}
+  .sources a{color:var(--forest)}
+  .method{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px 22px;box-shadow:var(--shadow);margin-bottom:22px;font-size:13.5px;
+  }
+  .method h3{margin:0 0 10px;font-size:14px;color:var(--terra)}
+  .method ul{margin:0;padding-left:1.25em}
+  .method li{margin:5px 0}
+  footer{padding:36px 0 56px;color:var(--ink-soft);font-size:12.5px;text-align:center}
+  a{color:var(--forest)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <p class="eyebrow">2026年10月・結婚20周年旅行 / 栃木県 那須</p>
+    <h1>那須の宿 候補7軒と<br>高速インターチェンジの位置関係</h1>
+    <p class="lead">
+      「どのICで降りて、そこから何分か」を基準に候補を見比べるための地図です。
+      候補7軒・主要IC3ヶ所・周辺の観光スポットを同じ地図に重ね、各宿から最寄りICまでの
+      実際の走行ルートを引いています。
+    </p>
+  </div>
+</header>
+
+<div class="wrap summary">
+  <div class="summary-inner">
+    <h2>この地図でわかること</h2>
+    <ul>
+      <li><strong>7軒すべて最寄りは「那須IC」</strong>。那須高原スマートIC・黒磯板室ICはいずれも遠回りになるため、実質的な玄関口は那須IC 1ヶ所に絞れます。<br>
+        <span style="font-size:13px;color:var(--ink-soft)">※例外に近いのはモンゴリアビレッジ テンゲルで、那須ICと那須高原スマートICがどちらも9.2km（所要はスマートICが2分長い）。北（福島・白河）方面から向かう場合はスマートICも選択肢になります。</span></li>
+      <li>那須ICからの所要時間は<strong>6分〜20分</strong>と幅があります。最も近いのは<strong>ガストホフ那須花（4.5km・6分）</strong>、最も遠いのは<strong>合歓林オリエンタル（16.2km・20分）</strong>。</li>
+      <li>候補は大きく2グループ。<strong>那須街道沿い（南寄り・IC至近）</strong>＝那須花／テンゲル／散歩道と、<strong>那須ハイランドパーク側（西の別荘地）</strong>＝ローレル／アズール／合歓林。ペーパームーンは湯本寄りで観光地への起点として最短です。</li>
+      <li>観光の起点としての近さで見ると、<strong>那須湯本（殺生石）へはペーパームーンが5分</strong>、<strong>那須どうぶつ王国へはテンゲルが16分</strong>と有利です。</li>
+    </ul>
+  </div>
+</div>
+
+<section id="map-section">
+  <div class="wrap">
+    <h2 class="sec">位置関係マップ</h2>
+    <p class="sec-note">
+      表示の切り替えができます。宿のピン（番号）をクリックすると詳細が開き、下の一覧表・カードも連動します。
+    </p>
+    <div class="map-toolbar">
+      <label class="toggle on"><input type="checkbox" id="t-stays" checked>宿の候補（7軒）</label>
+      <label class="toggle on"><input type="checkbox" id="t-ics" checked>インターチェンジ（3ヶ所）</label>
+      <label class="toggle on"><input type="checkbox" id="t-routes" checked>最寄りICからのルート</label>
+      <label class="toggle on"><input type="checkbox" id="t-spots" checked>周辺観光スポット</label>
+      <span class="tb-sep"></span>
+      <button type="button" class="btn" id="fit-core">宿＋ICに合わせる</button>
+      <button type="button" class="btn" id="fit-all">観光スポットまで表示</button>
+    </div>
+    <div id="map"></div>
+    <div class="legend">
+      <span><i class="swatch ic"></i>高速IC</span>
+      <span><i class="swatch stay"></i>宿の候補</span>
+      <span><i class="swatch spot"></i>観光スポット</span>
+      <span><i class="swatch line"></i>最寄りICからの走行ルート</span>
+      <span><i class="swatch circle"></i>概略位置（徒歩約7分圏）</span>
+    </div>
+  </div>
+</section>
+
+<section id="table-section">
+  <div class="wrap">
+    <h2 class="sec">IC別 距離・所要時間の比較</h2>
+    <p class="sec-note">
+      距離・所要時間はOSRM（OpenStreetMapの道路データによる経路計算）で算出した一般道走行の実測値です。
+      「宿の公称」は各宿・予約サイトが案内している所要時間で、参考として併記しています。行をクリックすると地図が移動します。
+    </p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>宿</th>
+            <th>最寄りIC</th>
+            <th class="num">那須IC</th>
+            <th class="num">那須高原<br>スマートIC</th>
+            <th class="num">黒磯板室IC</th>
+            <th class="num">那須湯本<br>まで</th>
+            <th class="num">どうぶつ<br>王国まで</th>
+            <th>宿の公称</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="cards-section">
+  <div class="wrap">
+    <h2 class="sec">候補7軒の詳細</h2>
+    <p class="sec-note">料金は調査時点で公開されていた目安です。最新の料金・空室は各宿の公式サイトまたは電話でご確認ください。</p>
+    <div class="cards" id="cards"></div>
+  </div>
+</section>
+
+<section id="sources-section">
+  <div class="wrap">
+    <h2 class="sec">算出方法と出典</h2>
+    <div class="method">
+      <h3>算出方法</h3>
+      <ul>
+        <li><b>宿の座標</b>：OpenStreetMap（Nominatim）で施設名が登録されている6軒はその座標を使用。国土地理院の住所検索APIは枝番を丸めるため補助的にのみ利用しました。</li>
+        <li><b>ペーパームーン那須のみ座標が非公開</b>のため、正確なピンは置かず、公称の「バス停『一軒茶屋』から徒歩約7分」に基づく<b>半径600mの円</b>で概略位置を示しています（距離・所要時間もバス停基準の参考値）。</li>
+        <li><b>ICの起点</b>：高速本線ではなく、各ICが接続する一般道側の出口地点（那須IC＝那須高原線バイパス、那須高原スマートIC＝那須高原スマートインター線、黒磯板室IC＝黒磯板室インター線）を起点にしています。</li>
+        <li><b>距離・所要時間</b>：OSRM（OpenStreetMapベースの経路計算エンジン）の自動車プロファイルによる実測値。渋滞・季節要因は含みません。検証として、公称「那須ICより12分」のペンション散歩道は算出値12分、公称「3km・5分」のガストホフ那須花は4.5km・6分と整合しました。</li>
+      </ul>
+    </div>
+    <div class="sources">
+      <h3 style="font-size:14px;color:var(--terra);margin:0 0 10px">出典</h3>
+      <ol>
+        <li>那須高原ペンションローレル 公式サイト — <a href="https://www.nasu-pension-laurel.com/" target="_blank" rel="noopener">https://www.nasu-pension-laurel.com/</a></li>
+        <li>那須ペンション・ペーパームーン 公式サイト — <a href="https://p-moon.com/" target="_blank" rel="noopener">https://p-moon.com/</a></li>
+        <li>一般社団法人 那須町観光協会「ペンション ペーパームーン」 — <a href="https://www.nasukogen.org/spotsearch/detail.php?id=300141104" target="_blank" rel="noopener">https://www.nasukogen.org/spotsearch/detail.php?id=300141104</a></li>
+        <li>フォートラベル「合歓林（ネムリン）オリエンタル」 — <a href="https://4travel.jp/dm_hotel-10035708" target="_blank" rel="noopener">https://4travel.jp/dm_hotel-10035708</a></li>
+        <li>那須温泉旅館協同組合「モンゴリアビレッジ テンゲル」 — <a href="https://www.nasuonsen.com/search/detail.php?no=42" target="_blank" rel="noopener">https://www.nasuonsen.com/search/detail.php?no=42</a></li>
+        <li>ペンション アズール 公式サイト — <a href="http://www.p-azur.com/" target="_blank" rel="noopener">http://www.p-azur.com/</a></li>
+        <li>ペンション散歩道 公式サイト — <a href="http://nasu-sanpomichi.com/" target="_blank" rel="noopener">http://nasu-sanpomichi.com/</a></li>
+        <li>ガストホフ那須花 公式サイト（アクセス） — <a href="https://www.e-nasuka.com/access.html" target="_blank" rel="noopener">https://www.e-nasuka.com/access.html</a></li>
+        <li>Wikipedia「那須インターチェンジ」（座標・所在地） — <a href="https://ja.wikipedia.org/wiki/那須インターチェンジ" target="_blank" rel="noopener">https://ja.wikipedia.org/wiki/那須インターチェンジ</a></li>
+        <li>Wikipedia「黒磯板室インターチェンジ」（座標・所在地） — <a href="https://ja.wikipedia.org/wiki/黒磯板室インターチェンジ" target="_blank" rel="noopener">https://ja.wikipedia.org/wiki/黒磯板室インターチェンジ</a></li>
+        <li>Wikipedia「那須高原サービスエリア」（那須高原スマートIC） — <a href="https://ja.wikipedia.org/wiki/那須高原サービスエリア" target="_blank" rel="noopener">https://ja.wikipedia.org/wiki/那須高原サービスエリア</a></li>
+        <li>OpenStreetMap / Nominatim（施設・バス停・観光スポットの座標） — <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">https://www.openstreetmap.org/copyright</a></li>
+        <li>OSRM（経路・距離・所要時間の算出） — <a href="https://project-osrm.org/" target="_blank" rel="noopener">https://project-osrm.org/</a></li>
+        <li>国土地理院 住所検索API（住所→座標の補助的確認） — <a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noopener">https://maps.gsi.go.jp/development/ichiran.html</a></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    地図データ © OpenStreetMap contributors ／ 経路計算 OSRM<br>
+    2026年10月 結婚20周年旅行計画 — 調査時点：2026年8月
+  </div>
+</footer>
+
+<script src="vendor/leaflet/leaflet.js"></script>
+<script src="data/candidates.js"></script>
+<script>
+(function(){
+  const D = window.CANDIDATES;
+  if(!D){ document.getElementById('map').innerHTML =
+    '<p style="padding:24px">データ（data/candidates.js）を読み込めませんでした。</p>'; return; }
+
+  const fmt = r => r.km.toFixed(1) + 'km / ' + r.min + '分';
+  const ICNAMES = D.ics.map(i => i.name);
+  const ANCHOR_YUMOTO = D.anchors[0], ANCHOR_KINGDOM = D.anchors[1];
+  const stayMarkers = {};
+  let map = null, layStays = null;
+
+  /* ================= table ================= */
+  const tbody = document.getElementById('tbody');
+  // 各列の最短値を強調するため最小値を求める
+  const mins = {};
+  ICNAMES.forEach(ic => mins[ic] = Math.min.apply(null, D.stays.map(s => s.ic[ic].km)));
+  const minYumoto = Math.min.apply(null, D.stays.map(s => s.spots[ANCHOR_YUMOTO].km));
+  const minKingdom = Math.min.apply(null, D.stays.map(s => s.spots[ANCHOR_KINGDOM].km));
+
+  D.stays.forEach(s => {
+    const tr = document.createElement('tr');
+    tr.dataset.no = s.no;
+    const cells = [];
+    cells.push('<td><div class="name-cell"><span class="rank">'+s.no+'</span><b>'+s.name+'</b>'+
+               (s.precision==='approx'?'<span class="tag">概略</span>':'')+'</div></td>');
+    cells.push('<td><b style="color:var(--terra)">'+s.nearestIc+'</b></td>');
+    ICNAMES.forEach(ic => {
+      const r = s.ic[ic];
+      const best = Math.abs(r.km - mins[ic]) < 0.05;
+      cells.push('<td class="num'+(best?' best':'')+'">'+r.km.toFixed(1)+'km<br>'+r.min+'分</td>');
+    });
+    const y = s.spots[ANCHOR_YUMOTO], k = s.spots[ANCHOR_KINGDOM];
+    cells.push('<td class="num'+(Math.abs(y.km-minYumoto)<0.05?' best':'')+'">'+y.min+'分</td>');
+    cells.push('<td class="num'+(Math.abs(k.km-minKingdom)<0.05?' best':'')+'">'+k.min+'分</td>');
+    cells.push('<td style="font-size:12.5px;color:var(--ink-soft)">'+s.claim+'</td>');
+    tr.innerHTML = cells.join('');
+    tr.addEventListener('click', () => setActive(s.no, true));
+    tbody.appendChild(tr);
+  });
+
+  /* ================= cards ================= */
+  const cards = document.getElementById('cards');
+  D.stays.forEach(s => {
+    const el = document.createElement('article');
+    el.className = 'card';
+    el.id = 'stay-' + s.no;
+    el.dataset.no = s.no;
+    el.innerHTML =
+      '<h3><span class="rank">'+s.no+'</span><span>'+s.name+'</span></h3>'+
+      '<p class="addr">'+s.addr+'</p>'+
+      '<dl>'+
+        '<dt>最寄りIC</dt><dd><b>'+s.nearestIc+'</b>　'+fmt(s.ic[s.nearestIc])+'</dd>'+
+        '<dt>宿の公称</dt><dd>'+s.claim+'</dd>'+
+        '<dt>料金目安</dt><dd>'+s.price+'</dd>'+
+        '<dt>電話</dt><dd><a href="tel:'+s.tel.replace(/-/g,'')+'">'+s.tel+'</a></dd>'+
+        '<dt>サイト</dt><dd><a href="'+s.site+'" target="_blank" rel="noopener">詳細を開く</a></dd>'+
+        '<dt>観光起点</dt><dd>那須湯本 '+s.spots[ANCHOR_YUMOTO].min+'分 ／ どうぶつ王国 '+s.spots[ANCHOR_KINGDOM].min+'分</dd>'+
+      '</dl>'+
+      '<p class="feat">'+s.feature+'</p>'+
+      (s.precision==='approx'
+        ? '<p class="warn">正確な座標が非公開のため、地図上は「バス停 一軒茶屋から徒歩約7分」に基づく概略位置（半径600mの円）です。距離・所要時間もバス停基準の参考値です。</p>'
+        : '');
+    el.addEventListener('click', () => setActive(s.no, false));
+    cards.appendChild(el);
+  });
+
+  /* ================= linking ================= */
+  function setActive(no, scrollToCard){
+    document.querySelectorAll('#tbody tr').forEach(tr =>
+      tr.classList.toggle('active', tr.dataset.no === String(no)));
+    document.querySelectorAll('.card').forEach(c =>
+      c.classList.toggle('active', c.dataset.no === String(no)));
+    document.querySelectorAll('.pin').forEach(p => p.classList.remove('active'));
+    const m = stayMarkers[no];
+    if (map && m){
+      if (layStays && !map.hasLayer(layStays)) { document.getElementById('t-stays').click(); }
+      map.setView(m.getLatLng(), Math.max(map.getZoom(), 13), {animate:true});
+      m.openPopup();
+      const icon = m.getElement() && m.getElement().querySelector('.pin');
+      if (icon) icon.classList.add('active');
+    }
+    if (scrollToCard){
+      const card = document.getElementById('stay-'+no);
+      if (card) card.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+  }
+
+  /* ================= map ================= */
+  // 地図の描画に失敗しても比較表とカードは残るよう、ここから下だけを保護する
+  if (typeof L === 'undefined'){
+    document.getElementById('map').innerHTML =
+      '<p style="padding:24px;color:var(--ink-soft)">地図ライブラリ（vendor/leaflet/leaflet.js）を読み込めませんでした。'+
+      '下の比較表と詳細カードはそのままご覧いただけます。</p>';
+    return;
+  }
+  map = L.map('map', {scrollWheelZoom:false}).setView([37.055, 140.010], 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom:18, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  layStays = L.layerGroup().addTo(map);
+  const layIcs = L.layerGroup().addTo(map);
+  const layRoutes = L.layerGroup().addTo(map);
+  const laySpots = L.layerGroup().addTo(map);
+
+  // ICマーカー（点は正確な位置に置き、名称は右側のラベルで表示）
+  D.ics.forEach(ic => {
+    L.marker([ic.lat, ic.lng], {
+      icon: L.divIcon({className:'', html:'<div class="dot-ic"></div>', iconSize:[14,14], iconAnchor:[7,7]}),
+      zIndexOffset: 500
+    }).addTo(layIcs)
+      .bindPopup('<b>'+ic.name+'</b><br><span class="pop-meta">'+ic.road+'</span><br>'+ic.note)
+      .bindTooltip(ic.name, {permanent:true, direction:'right', offset:[9,0], className:'tip-ic'});
+  });
+
+  // 観光スポット（至近のスポットはラベルが重なるので左右に振り分ける）
+  const placed = [];
+  D.spots.forEach(sp => {
+    const clash = placed.some(o => map.distance([o.lat,o.lng],[sp.lat,sp.lng]) < 700);
+    const left = clash;
+    L.marker([sp.lat, sp.lng], {
+      icon: L.divIcon({className:'', html:'<div class="dot-spot"></div>', iconSize:[11,11], iconAnchor:[5,5]})
+    }).addTo(laySpots).bindPopup('<b>'+sp.name+'</b><br><span class="pop-meta">'+sp.cat+'</span>')
+      .bindTooltip(sp.name, {permanent:true, direction:left?'left':'right',
+                             offset:[left?-7:7,0], className:'tip-spot'});
+    placed.push(sp);
+  });
+
+  // ピンが重なる宿（至近距離）を左右にずらすためのオフセットを算出
+  const nudge = {};
+  const groups = [];
+  D.stays.forEach(s => {
+    const g = groups.find(g => g.some(o =>
+      map.distance([o.lat,o.lng],[s.lat,s.lng]) < 250));
+    g ? g.push(s) : groups.push([s]);
+  });
+  groups.forEach(g => g.forEach((s,i) => {
+    nudge[s.no] = g.length > 1 ? Math.round((i - (g.length-1)/2) * 34) : 0;
+    if (g.length > 1) s.nudged = g.filter(o => o !== s).map(o => o.no+'. '+o.name);
+  }));
+
+  // 宿マーカー＋ルート
+  D.stays.forEach(s => {
+    const approx = s.precision === 'approx';
+    const dx = nudge[s.no] || 0;
+    const m = L.marker([s.lat, s.lng], {
+      icon: L.divIcon({className:'',
+        html:'<div class="pin'+(approx?' approx':'')+'" style="width:30px;height:30px">'+s.no+'</div>',
+        iconSize:[30,30], iconAnchor:[15 - dx, 15]}),
+      zIndexOffset: 800
+    }).addTo(layStays);
+    m.bindPopup(
+      '<b>'+s.no+'. '+s.name+'</b>'+(approx?' <span class="tag">概略位置</span>':'')+
+      '<br><span class="pop-meta">'+s.addr+'</span>'+
+      '<hr style="border:0;border-top:1px solid #e2ded4;margin:8px 0">'+
+      '最寄り：<b>'+s.nearestIc+'</b> '+fmt(s.ic[s.nearestIc])+'<br>'+
+      '<span class="pop-meta">那須湯本まで '+fmt(s.spots[ANCHOR_YUMOTO])+
+      '／どうぶつ王国まで '+fmt(s.spots[ANCHOR_KINGDOM])+'</span>'+
+      (s.nudged ? '<br><span class="pop-meta">※ '+s.nudged.join('・')+
+                  ' と至近のため、ピンを左右に少しずらして表示しています。</span>' : '')+
+      (s.site?'<br><a href="'+s.site+'" target="_blank" rel="noopener">公式・詳細を見る</a>':'')
+    );
+    m.on('click', () => setActive(s.no, false));
+    stayMarkers[s.no] = m;
+
+    if (approx) {
+      L.circle([s.lat, s.lng], {radius:600, color:'#c05f38', weight:2, dashArray:'6 5',
+        fillColor:'#c05f38', fillOpacity:.07}).addTo(layStays)
+        .bindPopup('<b>ペーパームーン那須の概略位置</b><br><span class="pop-meta">正確な座標が非公開のため、公称「バス停『一軒茶屋』から徒歩約7分」に基づく半径600mの円で表示しています。</span>');
+    }
+
+    L.polyline(s.route, {color:'#2f5d4a', weight:3.5, opacity:.75, dashArray:'7 6'})
+      .addTo(layRoutes)
+      .bindPopup('<b>'+s.nearestIc+' → '+s.name+'</b><br>'+fmt(s.ic[s.nearestIc]));
+  });
+
+  // 既定は「宿＋IC」に合わせる（この関係を読むのが主目的）。観光スポットまで含む全体表示は切替ボタンで。
+  const boundsCore = L.latLngBounds(
+    D.stays.map(s=>[s.lat,s.lng]).concat(D.ics.map(i=>[i.lat,i.lng]))).pad(0.12);
+  const boundsAll = L.latLngBounds(
+    D.stays.map(s=>[s.lat,s.lng])
+      .concat(D.ics.map(i=>[i.lat,i.lng]))
+      .concat(D.spots.map(p=>[p.lat,p.lng]))).pad(0.06);
+  map.fitBounds(boundsCore);
+  document.getElementById('fit-core').addEventListener('click', () => map.fitBounds(boundsCore));
+  document.getElementById('fit-all').addEventListener('click', () => map.fitBounds(boundsAll));
+
+  /* ================= toggles ================= */
+  const pairs = [['t-stays',layStays],['t-ics',layIcs],['t-routes',layRoutes],['t-spots',laySpots]];
+  pairs.forEach(([id, layer]) => {
+    const el = document.getElementById(id);
+    el.addEventListener('change', () => {
+      el.checked ? map.addLayer(layer) : map.removeLayer(layer);
+      el.closest('.toggle').classList.toggle('on', el.checked);
+    });
+  });
+
+})();
+</script>
+</body>
+</html>
