@@ -3,187 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>那須の宿 候補マップ｜2026年10月 結婚20周年旅行</title>
+<title>那須ハイランド周辺おすすめ宿｜旅行先検討マップ</title>
 <meta name="description" content="2026年10月の結婚20周年旅行に向けた、栃木県那須のペンション候補7軒と最寄り高速インターチェンジの位置関係マップ。">
 <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
-<style>
-  :root{
-    --bg:#f7f5f0; --panel:#ffffff; --ink:#1f2a24; --ink-soft:#5a6b62; --line:#e2ded4;
-    --forest:#2f5d4a; --forest-soft:#e6efe9; --terra:#c05f38; --terra-soft:#fbeee8;
-    --gold:#b08d3f; --shadow:0 1px 2px rgba(31,42,36,.06),0 8px 24px rgba(31,42,36,.06);
-    --radius:14px;
-  }
-  @media (prefers-color-scheme: dark){
-    :root{
-      --bg:#14181a; --panel:#1c2225; --ink:#e8ece9; --ink-soft:#9fb0a8; --line:#2c3438;
-      --forest:#7fbfa2; --forest-soft:#1f2f28; --terra:#e59470; --terra-soft:#32241e;
-      --gold:#d0ab5e; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
-    }
-  }
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{
-    margin:0; background:var(--bg); color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;
-    line-height:1.75; -webkit-text-size-adjust:100%;
-  }
-  .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
-
-  /* ---------- header ---------- */
-  header{background:var(--forest);color:#fff;padding:48px 0 40px}
-  @media (prefers-color-scheme: dark){header{background:#1a2b23}}
-  header .eyebrow{
-    font-size:13px;letter-spacing:.18em;text-transform:none;opacity:.85;margin:0 0 10px;
-    font-weight:600;
-  }
-  header h1{margin:0;font-size:clamp(26px,4.6vw,40px);line-height:1.3;font-weight:800;letter-spacing:.01em}
-  header p.lead{margin:14px 0 0;max-width:44em;font-size:clamp(14px,1.7vw,16px);opacity:.92}
-
-  /* ---------- summary ---------- */
-  .summary{margin:-24px auto 0;position:relative;z-index:2}
-  .summary-inner{
-    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-    box-shadow:var(--shadow);padding:22px 24px;
-  }
-  .summary h2{margin:0 0 10px;font-size:15px;color:var(--terra);letter-spacing:.04em}
-  .summary ul{margin:0;padding-left:1.2em}
-  .summary li{margin:6px 0}
-  .summary strong{color:var(--forest);font-weight:700}
-
-  /* ---------- sections ---------- */
-  section{padding:44px 0 8px}
-  h2.sec{font-size:clamp(19px,2.6vw,24px);margin:0 0 6px;letter-spacing:.01em}
-  .sec-note{margin:0 0 20px;color:var(--ink-soft);font-size:14px;max-width:52em}
-
-  /* ---------- map ---------- */
-  #map{
-    height:min(70vh,620px);border-radius:var(--radius);border:1px solid var(--line);
-    box-shadow:var(--shadow);background:var(--panel);
-  }
-  .map-toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
-  .toggle{
-    display:inline-flex;align-items:center;gap:7px;cursor:pointer;user-select:none;
-    background:var(--panel);border:1px solid var(--line);border-radius:999px;
-    padding:7px 14px;font-size:13px;font-weight:600;color:var(--ink-soft);
-    transition:border-color .15s, color .15s;
-  }
-  .toggle:hover{border-color:var(--forest)}
-  .toggle input{accent-color:var(--forest);margin:0}
-  .toggle.on{color:var(--ink);border-color:var(--forest)}
-  .tb-sep{width:1px;background:var(--line);margin:2px 4px}
-  .btn{
-    font:inherit;font-size:13px;font-weight:600;cursor:pointer;
-    background:var(--forest);color:#fff;border:1px solid var(--forest);
-    border-radius:999px;padding:7px 14px;transition:opacity .15s;
-  }
-  @media (prefers-color-scheme: dark){.btn{color:#12211b}}
-  .btn:hover{opacity:.85}
-  .legend{
-    display:flex;flex-wrap:wrap;gap:18px;margin:14px 0 0;font-size:13px;color:var(--ink-soft);
-  }
-  .legend span{display:inline-flex;align-items:center;gap:7px}
-  .swatch{width:15px;height:15px;border-radius:50%;display:inline-block;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.15)}
-  .swatch.ic{background:var(--terra);border-radius:3px}
-  .swatch.stay{background:var(--forest)}
-  .swatch.spot{background:var(--gold);width:10px;height:10px}
-  .swatch.line{width:22px;height:0;border-radius:0;border:0;border-top:3px dashed var(--forest);box-shadow:none}
-  .swatch.circle{background:transparent;border:2px dashed var(--terra);box-shadow:none}
-
-  /* markers */
-  .pin{
-    display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;
-    border-radius:50%;border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);
-    font-size:14px;background:var(--forest);
-  }
-  .pin.approx{background:#7c9c8d;border-style:dashed}
-  .pin.active{outline:3px solid var(--gold);outline-offset:2px}
-  .dot-ic{
-    width:14px;height:14px;border-radius:3px;background:#c05f38;
-    border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4);
-  }
-  .dot-spot{
-    width:11px;height:11px;border-radius:50%;background:#b08d3f;
-    border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.35);
-  }
-  /* 地図上の常時ラベル（Leafletのツールチップ既定枠は使わず、文字だけを置く） */
-  .leaflet-tooltip.tip-ic,.leaflet-tooltip.tip-spot{
-    background:none;border:0;box-shadow:none;padding:0;white-space:nowrap;
-    font-weight:800;text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 4px #fff,0 0 6px #fff;
-  }
-  .leaflet-tooltip.tip-ic{color:#a94b26;font-size:12px}
-  .leaflet-tooltip.tip-spot{color:#7d6122;font-size:11px;font-weight:700}
-  .leaflet-tooltip.tip-ic:before,.leaflet-tooltip.tip-spot:before{display:none}
-  .leaflet-popup-content{margin:12px 14px;font-size:13.5px;line-height:1.65}
-  .leaflet-popup-content b{font-size:14.5px}
-  .pop-meta{color:#5a6b62;font-size:12.5px}
-
-  /* ---------- table ---------- */
-  .table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);background:var(--panel)}
-  table{border-collapse:collapse;width:100%;min-width:760px;font-size:14px}
-  thead th{
-    background:var(--forest-soft);color:var(--forest);font-weight:700;font-size:12.5px;
-    text-align:left;padding:12px 14px;white-space:nowrap;border-bottom:1px solid var(--line);
-  }
-  thead th.num{text-align:right}
-  tbody td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
-  tbody td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-  tbody tr{cursor:pointer;transition:background .12s}
-  tbody tr:hover{background:var(--forest-soft)}
-  tbody tr.active{background:var(--forest-soft);box-shadow:inset 3px 0 0 var(--gold)}
-  tbody tr:last-child td{border-bottom:0}
-  .rank{
-    display:inline-flex;width:22px;height:22px;border-radius:50%;background:var(--forest);color:#fff;
-    align-items:center;justify-content:center;font-size:12px;font-weight:800;margin-right:8px;flex:none;
-  }
-  .name-cell{display:flex;align-items:flex-start;min-width:15em}
-  .name-cell b{font-weight:700}
-  .best{color:var(--terra);font-weight:700}
-  .tag{
-    display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:999px;
-    background:var(--terra-soft);color:var(--terra);margin-left:6px;vertical-align:2px;
-  }
-
-  /* ---------- cards ---------- */
-  .cards{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));margin-top:4px}
-  .card{
-    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-    box-shadow:var(--shadow);padding:20px;scroll-margin-top:20px;
-  }
-  .card.active{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold),var(--shadow)}
-  .card h3{margin:0 0 2px;font-size:16.5px;display:flex;align-items:flex-start;gap:0}
-  .card .addr{margin:0 0 14px;font-size:12.5px;color:var(--ink-soft)}
-  .card dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:13.5px}
-  .card dt{color:var(--ink-soft);font-weight:600;white-space:nowrap}
-  .card dd{margin:0}
-  .card .feat{margin:14px 0 0;font-size:13px;color:var(--ink-soft);line-height:1.7;border-top:1px dashed var(--line);padding-top:12px}
-  .card a{color:var(--forest);font-weight:600}
-  .warn{
-    margin:12px 0 0;font-size:12.5px;background:var(--terra-soft);color:var(--terra);
-    border-radius:8px;padding:9px 12px;font-weight:600;
-  }
-
-  /* ---------- sources ---------- */
-  .sources{font-size:13px;color:var(--ink-soft)}
-  .sources ol{padding-left:1.4em;margin:0}
-  .sources li{margin:7px 0;word-break:break-word}
-  .sources a{color:var(--forest)}
-  .method{
-    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-    padding:20px 22px;box-shadow:var(--shadow);margin-bottom:22px;font-size:13.5px;
-  }
-  .method h3{margin:0 0 10px;font-size:14px;color:var(--terra)}
-  .method ul{margin:0;padding-left:1.25em}
-  .method li{margin:5px 0}
-  footer{padding:36px 0 56px;color:var(--ink-soft);font-size:12.5px;text-align:center}
-  a{color:var(--forest)}
-</style>
+<link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
+
+<nav class="tabs" aria-label="マップの切り替え">
+  <div class="wrap tabs-inner">
+    <span class="tabs-brand">旅行先検討マップ</span>
+    <a href="index.html" class="tab is-active" aria-current="page">那須ハイランド周辺おすすめ宿</a>
+    <a href="pool.html" class="tab">関東 プールで遊べる宿マップ</a>
+  </div>
+</nav>
 
 <header>
   <div class="wrap">
     <p class="eyebrow">2026年10月・結婚20周年旅行 / 栃木県 那須</p>
-    <h1>那須の宿 候補7軒と<br>高速インターチェンジの位置関係</h1>
+    <h1>那須ハイランド周辺<br>おすすめ宿7軒とICの位置関係</h1>
     <p class="lead">
       「どのICで降りて、そこから何分か」を基準に候補を見比べるための地図です。
       候補7軒・主要IC3ヶ所・周辺の観光スポットを同じ地図に重ね、各宿から最寄りICまでの
@@ -201,6 +39,8 @@
       <li>那須ICからの所要時間は<strong>6分〜20分</strong>と幅があります。最も近いのは<strong>ガストホフ那須花（4.5km・6分）</strong>、最も遠いのは<strong>合歓林オリエンタル（16.2km・20分）</strong>。</li>
       <li>候補は大きく2グループ。<strong>那須街道沿い（南寄り・IC至近）</strong>＝那須花／テンゲル／散歩道と、<strong>那須ハイランドパーク側（西の別荘地）</strong>＝ローレル／アズール／合歓林。ペーパームーンは湯本寄りで観光地への起点として最短です。</li>
       <li>観光の起点としての近さで見ると、<strong>那須湯本（殺生石）へはペーパームーンが5分</strong>、<strong>那須どうぶつ王国へはテンゲルが16分</strong>と有利です。</li>
+      <li>この7軒はプールを持ちませんが、<strong>全軒が屋内プールのあるホテルまで車16分以内</strong>です。
+        プールを軸に探す場合は<a href="pool.html">関東 プールで遊べる宿マップ</a>をご覧ください。</li>
     </ul>
   </div>
 </div>
@@ -305,7 +145,7 @@
 <footer>
   <div class="wrap">
     地図データ © OpenStreetMap contributors ／ 経路計算 OSRM<br>
-    2026年10月 結婚20周年旅行計画 — 調査時点：2026年8月
+    旅行先検討マップ（那須ハイランド周辺おすすめ宿） — 調査時点：2026年8月
   </div>
 </footer>
 

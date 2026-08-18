@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>関東 プールで遊べる宿マップ｜旅行先検討マップ</title>
+<meta name="description" content="埼玉県新座市から車3時間圏内で、プールで思いきり遊べる宿・施設をまとめたマップ。走行時間・営業期間・宿泊可否・Instagramの人気投稿つき。">
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<nav class="tabs" aria-label="マップの切り替え">
+  <div class="wrap tabs-inner">
+    <span class="tabs-brand">旅行先検討マップ</span>
+    <a href="index.html" class="tab">那須ハイランド周辺おすすめ宿</a>
+    <a href="pool.html" class="tab is-active" aria-current="page">関東 プールで遊べる宿マップ</a>
+  </div>
+</nav>
+
+<header class="hdr hdr--pool">
+  <div class="wrap">
+    <p class="eyebrow">大人2名＋9歳（132cm）／ 起点：埼玉県新座市 ／ 車で3時間以内</p>
+    <h1>プールで遊べる宿・施設<br>11ヶ所マップ</h1>
+    <p class="lead">
+      サマーランドやハワイアンズのように<strong>プールで思いきり遊べること</strong>を軸に、
+      新座市から車3時間圏内の施設を集めました。宿泊できる宿と日帰りプールの両方、
+      通年営業（屋内温水）と夏季限定の両方を載せています。
+    </p>
+  </div>
+</header>
+
+<div class="wrap summary">
+  <div class="summary-inner">
+    <h2>結論から</h2>
+    <ul>
+      <li><strong>この夏まだ間に合う（8月18日時点）</strong>なら、<strong>東武動物公園「東武スーパープール」（車51分）</strong>が本命。2026年に波のプールを開業以来初の大規模改修し「SAFARI COAST」としてリニューアルした年で、8月31日まで連日＋9月の土日祝も営業しています。</li>
+      <li><strong>泊まりでプール三昧なら龍宮城スパ・ホテル三日月（車73分）</strong>が圧倒的に近い。屋内「アクアパーク」が通年営業でウォータースライダーと流れるプール、宿泊料金にプール利用が含まれます。</li>
+      <li><strong>10月の20周年旅行と両立させるなら通年営業の屋内プール</strong>が対象。<strong>ホテルエピナール那須（車144分）</strong>は那須の宿候補マップと同じエリアにあり、25m屋内温水プール＋子ども用プールが宿泊者無料です。</li>
+      <li><strong>132cmという身長は有利</strong>。大型スライダーの制限は110〜130cmが多く、東京サマーランドでも<strong>130cmが大きな分かれ目</strong>とされています。主要スライダーはほぼ乗れる見込みです（現地掲示で最終確認を）。</li>
+      <li>いちばん近いのは<strong>川越水上公園（車25分）</strong>。県営で安く、8月31日まで＋9月5・6日に営業。ただし直線スライダーは老朽化で使用不可です。</li>
+    </ul>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <h2 class="sec">プール施設マップ</h2>
+    <p class="sec-note">
+      赤い星が起点の新座市。ピンをクリックすると詳細が開き、<strong>新座市からの実際の走行ルート</strong>が地図に引かれます。
+      下の絞り込みで「泊まれる」「通年で入れる」などに限定できます。
+    </p>
+    <div class="map-toolbar" id="filters">
+      <button type="button" class="chip is-on" data-filter="all">すべて<span class="cnt"></span></button>
+      <button type="button" class="chip" data-filter="stay">泊まれる宿<span class="cnt"></span></button>
+      <button type="button" class="chip" data-filter="day">日帰りプール<span class="cnt"></span></button>
+      <button type="button" class="chip" data-filter="year">屋内・通年で入れる<span class="cnt"></span></button>
+      <button type="button" class="chip" data-filter="now">この夏まだ間に合う<span class="cnt"></span></button>
+      <span class="tb-sep"></span>
+      <button type="button" class="btn" id="fit-all">全体を表示</button>
+      <button type="button" class="btn btn--ghost" id="clear-route">ルートを消す</button>
+    </div>
+    <div id="map"></div>
+    <div class="legend">
+      <span><i class="swatch origin"></i>起点（新座市）</span>
+      <span><i class="swatch stay"></i>泊まれる宿</span>
+      <span><i class="swatch day"></i>日帰りプール</span>
+      <span><i class="swatch line2"></i>選択した施設への走行ルート</span>
+      <span class="legend-note">ピンの番号は新座市から近い順</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="sec">走行時間で比べる</h2>
+    <p class="sec-note">
+      所要時間はOSRM（OpenStreetMapの道路データによる経路計算）で算出した高速道路利用の目安で、
+      <strong>渋滞は含みません</strong>。お盆や連休は1.3〜1.5倍を見ておくのが安全です。行をクリックすると地図が動きます。
+    </p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>施設</th><th>エリア</th><th class="num">車で</th><th class="num">距離</th>
+            <th>プール形態</th><th>営業期間</th><th>宿泊</th><th>料金目安</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <p class="sec-note" style="margin-top:14px">
+      3時間（180分）を基準にすると、11ヶ所すべてが圏内です。最遠のスパリゾートハワイアンズが169分で、
+      渋滞を考えると<strong>実質ぎりぎり</strong>なので、行くなら朝早い出発をおすすめします。
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="sec">施設ごとの詳細とInstagram</h2>
+    <p class="sec-note">
+      Instagramは<strong>ハッシュタグの「人気の投稿」ページ</strong>へのリンクです。実際の写真や混雑の様子が分かります。
+      公式アカウントは、公式サイトに記載があって確認できたものだけ載せています。
+    </p>
+    <div class="cards" id="cards"></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="sec">那須の宿と組み合わせる</h2>
+    <p class="sec-note">
+      宿はプールを持たなくても、近くに屋内プールがあれば成り立ちます。10月の20周年旅行で那須のペンションに泊まる場合の
+      「プールは日帰りで使う」プランです。
+    </p>
+    <div class="crosslink" id="crosslink"></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="sec">検討したが外した施設</h2>
+    <div class="method" id="excluded"></div>
+  </div>
+</section>
+
+<section id="sources-section">
+  <div class="wrap">
+    <h2 class="sec">算出方法と出典</h2>
+    <div class="method">
+      <h3>算出方法</h3>
+      <ul>
+        <li><b>起点</b>：埼玉県新座市野火止1-1-1（新座市役所）。国土地理院の住所検索APIで座標を取得。</li>
+        <li><b>施設の座標</b>：OpenStreetMap（Nominatim）の施設名一致を優先し、国土地理院の住所検索と照合して数百m以内で一致することを確認。</li>
+        <li><b>所要時間・距離</b>：OSRMの自動車プロファイル（高速道路利用）による算出値。渋滞・休憩・季節要因は含みません。</li>
+        <li><b>営業期間・料金</b>：各施設の公式サイトおよび公開情報の調査時点（2026年8月）の内容。プール営業は天候や点検で変わるため、出発前に公式サイトで再確認してください。</li>
+        <li><b>Instagram</b>：アカウントの実在確認はログインが必要で判定できないため、推測したアカウント名は掲載していません。確実に開けるハッシュタグの人気投稿ページを主に案内しています。</li>
+      </ul>
+    </div>
+    <div class="sources"><h3>出典</h3><ol id="sources"></ol></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    地図データ © OpenStreetMap contributors ／ 経路計算 OSRM<br>
+    調査時点：2026年8月18日
+  </div>
+</footer>
+
+<script src="vendor/leaflet/leaflet.js"></script>
+<script src="data/pools.js"></script>
+<script src="assets/pool.js"></script>
+</body>
+</html>
