@@ -4,14 +4,13 @@
   if(!D){ mapEl.innerHTML = '<p style="padding:24px">データ（data/pools.js）を読み込めませんでした。</p>'; return; }
 
   const P = D.pools;
-  const yearRound = p => /通年/.test(p.season);
-  // 「この夏まだ間に合う」= 通年営業、または営業期間に9月が含まれるもの（調査時点 8/18）
-  const openNow = p => yearRound(p) || /8月31日|9月/.test(p.season);
+  // 屋内プールが通年かどうかはデータの indoorYearRound で判定する
+  // （営業期間の文章から推測すると誤判定しやすいため）
+  const yearRound = p => p.indoorYearRound;
   const badge = p =>
     (p.stay ? '<span class="badge badge--stay">泊まれる</span>' : '') +
-    (yearRound(p) ? '<span class="badge badge--year">通年</span>'
-                  : '<span class="badge badge--season">季節限定</span>') +
-    (openNow(p) ? '<span class="badge badge--now">今夏OK</span>' : '');
+    (yearRound(p) ? '<span class="badge badge--year">屋内・10月もOK</span>'
+                  : '<span class="badge badge--season">夏季限定</span>');
 
   /* ================= 一覧表 ================= */
   const tbody = document.getElementById('tbody');
@@ -93,6 +92,11 @@
     ['ホテルエピナール那須 屋内温水プール','https://www.epinard.jp/spa/pool/'],
     ['ホテルエピナール那須 日帰り温泉パック','https://www.epinard.jp/spa/day_trip/'],
     ['星野リゾート リゾナーレ八ヶ岳','https://risonare.com/yatsugatake/'],
+    ['日光きぬ川ホテル三日月 公式サイト','https://www.mikazuki.co.jp/kinugawa/'],
+    ['箱根小涌園ユネッサン 公式サイト','https://www.yunessun.com/'],
+    ['グランドメルキュール那須高原リゾート＆スパ 公式サイト','https://grand-mercure-nasuhighlands-resortandspa.jp/'],
+    ['箱根小涌園ユネッサン 料金案内・営業時間','https://www.yunessun.com/service/price/'],
+    ['箱根ホテル小涌園 ユネッサン案内','https://www.hakone-hotelkowakien.jp/yunessun.html'],
     ['ホテルサンバレー那須 湯遊天国／アクアヴィーナス','https://www.nasu3800.co.jp/spa/onsen.php'],
     ['東京サマーランド プール特集','https://www.summerland.co.jp/pool/'],
     ['東京サマーランド パークガイド','https://www.summerland.co.jp/guide/'],
@@ -200,7 +204,7 @@
     stay: p => p.stay,
     day: p => !p.stay,
     year: p => yearRound(p),
-    now: p => openNow(p),
+    summer: p => !yearRound(p),
   };
   // チップの件数はデータから数える（手書きするとデータ更新時にずれるため）
   document.querySelectorAll('#filters .chip').forEach(btn => {

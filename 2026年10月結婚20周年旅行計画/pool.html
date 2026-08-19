@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>関東 プールで遊べる宿マップ｜旅行先検討マップ</title>
-<meta name="description" content="埼玉県新座市から車3時間圏内で、プールで思いきり遊べる宿・施設をまとめたマップ。走行時間・営業期間・宿泊可否・Instagramの人気投稿つき。">
+<meta name="description" content="埼玉県新座市から車3時間圏内で、プールで思いきり遊べる宿・施設14ヶ所をまとめたマップ。走行時間・営業期間・宿泊可否・Instagramの人気投稿つき。">
 <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
 <link rel="stylesheet" href="assets/style.css">
 </head>
@@ -21,7 +21,7 @@
 <header class="hdr hdr--pool">
   <div class="wrap">
     <p class="eyebrow">大人2名＋9歳（132cm）／ 起点：埼玉県新座市 ／ 車で3時間以内</p>
-    <h1>プールで遊べる宿・施設<br>11ヶ所マップ</h1>
+    <h1>プールで遊べる宿・施設<br>14ヶ所マップ</h1>
     <p class="lead">
       サマーランドやハワイアンズのように<strong>プールで思いきり遊べること</strong>を軸に、
       新座市から車3時間圏内の施設を集めました。宿泊できる宿と日帰りプールの両方、
@@ -36,8 +36,10 @@
     <ul>
       <li><strong>この夏まだ間に合う（8月18日時点）</strong>なら、<strong>東武動物公園「東武スーパープール」（車51分）</strong>が本命。2026年に波のプールを開業以来初の大規模改修し「SAFARI COAST」としてリニューアルした年で、8月31日まで連日＋9月の土日祝も営業しています。</li>
       <li><strong>泊まりでプール三昧なら龍宮城スパ・ホテル三日月（車73分）</strong>が圧倒的に近い。屋内「アクアパーク」が通年営業でウォータースライダーと流れるプール、宿泊料金にプール利用が含まれます。</li>
-      <li><strong>10月の20周年旅行と両立させるなら通年営業の屋内プール</strong>が対象。<strong>ホテルエピナール那須（車144分）</strong>は那須の宿候補マップと同じエリアにあり、25m屋内温水プール＋子ども用プールが宿泊者無料です。</li>
+      <li><strong>スライダー目的で季節を問わないなら箱根小涌園ユネッサン（車112分）</strong>。目玉の「ロデオマウンテン」の大型ウォータースライダーは<strong>温水なので冬でも滑れます</strong>。流れるプールは完全屋内で雨でも遊べ、宿泊する「箱根小涌園 天悠」は<strong>専用連絡通路でユネッサンと直結</strong>（入場無料券付きプランあり）。9歳＋大人という組み合わせにはいちばん噛み合う候補です。</li>
+      <li><strong>10月の20周年旅行と両立させるなら通年営業の屋内プール</strong>が対象。<strong>ホテルエピナール那須（車144分）</strong>は那須の宿候補マップと同じエリアにあり、25m屋内温水プール＋子ども用プールが宿泊者無料です。<strong>日光きぬ川ホテル三日月（車125分）</strong>も屋内スパが通年（ただし屋上25mプールは夏季のみ）。</li>
       <li><strong>132cmという身長は有利</strong>。大型スライダーの制限は110〜130cmが多く、東京サマーランドでも<strong>130cmが大きな分かれ目</strong>とされています。主要スライダーはほぼ乗れる見込みです（現地掲示で最終確認を）。</li>
+      <li>那須には<strong>プールのある宿が3軒</strong>（エピナール那須／グランドメルキュール那須高原／サンバレー那須）。ただし<strong>10月に泳げるのは屋内温水プールのエピナール那須だけ</strong>で、グランドメルキュールのガーデンプールとサンバレーの屋外プールは夏季限定です。グランドメルキュールに泊まる場合は、車7分のエピナール那須のプールを日帰りで使えます。</li>
       <li>いちばん近いのは<strong>川越水上公園（車25分）</strong>。県営で安く、8月31日まで＋9月5・6日に営業。ただし直線スライダーは老朽化で使用不可です。</li>
     </ul>
   </div>
@@ -48,14 +50,14 @@
     <h2 class="sec">プール施設マップ</h2>
     <p class="sec-note">
       赤い星が起点の新座市。ピンをクリックすると詳細が開き、<strong>新座市からの実際の走行ルート</strong>が地図に引かれます。
-      下の絞り込みで「泊まれる」「通年で入れる」などに限定できます。
+      下の絞り込みで「泊まれる」「屋内・10月も泳げる」などに限定できます。
     </p>
     <div class="map-toolbar" id="filters">
       <button type="button" class="chip is-on" data-filter="all">すべて<span class="cnt"></span></button>
       <button type="button" class="chip" data-filter="stay">泊まれる宿<span class="cnt"></span></button>
       <button type="button" class="chip" data-filter="day">日帰りプール<span class="cnt"></span></button>
-      <button type="button" class="chip" data-filter="year">屋内・通年で入れる<span class="cnt"></span></button>
-      <button type="button" class="chip" data-filter="now">この夏まだ間に合う<span class="cnt"></span></button>
+      <button type="button" class="chip" data-filter="year">屋内・10月も泳げる<span class="cnt"></span></button>
+      <button type="button" class="chip" data-filter="summer">夏季限定（今シーズン中に）<span class="cnt"></span></button>
       <span class="tb-sep"></span>
       <button type="button" class="btn" id="fit-all">全体を表示</button>
       <button type="button" class="btn btn--ghost" id="clear-route">ルートを消す</button>
@@ -90,7 +92,7 @@
       </table>
     </div>
     <p class="sec-note" style="margin-top:14px">
-      3時間（180分）を基準にすると、11ヶ所すべてが圏内です。最遠のスパリゾートハワイアンズが169分で、
+      3時間（180分）を基準にすると、14ヶ所すべてが圏内です。最遠のスパリゾートハワイアンズが169分で、
       渋滞を考えると<strong>実質ぎりぎり</strong>なので、行くなら朝早い出発をおすすめします。
     </p>
   </div>
